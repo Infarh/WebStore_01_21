@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+ï»¿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +27,7 @@ namespace WebStore
 
             app.UseEndpoints(endpoints =>
             {
-                // Ïðîåêöèÿ çàïðîñà íà äåéñòâèå
+                // ÐŸÑ€Ð¾ÐµÐºÑ†Ð¸Ñ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ° Ð½Ð° Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(Configuration["Greetings"]);
