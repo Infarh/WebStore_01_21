@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.AspNetCore.Mvc;
+
 using WebStore.Data;
 using WebStore.Infrastructure.Interfaces;
 using WebStore.Models;
@@ -27,6 +29,8 @@ namespace WebStore.Controllers
                 return View(employee);
             return NotFound();
         }
+
+        public IActionResult Create() => View("Edit", new EmployeeViewModel());
 
         #region Edit
 
@@ -64,7 +68,10 @@ namespace WebStore.Controllers
                 Age = model.Age
             };
 
-            _EmployeesData.Update(employee);
+            if (employee.Id == 0)
+                _EmployeesData.Add(employee);
+            else
+                _EmployeesData.Update(employee);
 
             return RedirectToAction("Index");
         }
@@ -97,7 +104,7 @@ namespace WebStore.Controllers
         {
             _EmployeesData.Delete(id);
             return RedirectToAction("Index");
-        } 
+        }
 
         #endregion
     }
