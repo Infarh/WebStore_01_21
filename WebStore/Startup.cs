@@ -9,16 +9,8 @@ namespace WebStore
 {
     public record Startup(IConfiguration Configuration)
     {
-        //private IConfiguration Configuration { get; }
-
-        //public Startup(IConfiguration Configuration)
-        //{
-        //    this.Configuration = Configuration;
-        //}
-        
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddMvc();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
@@ -35,6 +27,7 @@ namespace WebStore
 
             app.UseEndpoints(endpoints =>
             {
+                // Проекция запроса на действие
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(Configuration["Greetings"]);
@@ -43,8 +36,6 @@ namespace WebStore
                 endpoints.MapControllerRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
-                // http://localhost:5000 -> controller = "Home" action = "Index" параметр = null
-                // http://localhost:5000/Catalog/Products/5 controller = "Catalog" action = "Products" параметр = 5
             });
         }
     }
