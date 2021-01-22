@@ -1,25 +1,29 @@
+ï»¿using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Data;
+using WebStore.Infrastructure.Conventions;
+using WebStore.Infrastructure.Interfaces;
+using WebStore.Infrastructure.Middleware;
+using WebStore.Infrastructure.Services;
+using WebStore.Models;
 
 namespace WebStore
 {
     public record Startup(IConfiguration Configuration)
     {
-        //private IConfiguration Configuration { get; }
-
-        //public Startup(IConfiguration Configuration)
-        //{
-        //    this.Configuration = Configuration;
-        //}
-        
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddMvc();
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
+
+            //services.AddMvc(opt => opt.Conventions.Add(new TestControllerModelConvention()));
+            services
+               .AddControllersWithViews(/*opt => opt.Conventions.Add(new TestControllerModelConvention())*/)
+               .AddRazorRuntimeCompilation();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -27,14 +31,26 @@ namespace WebStore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
 
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseWelcomePage("/welcome");
+
+            app.UseMiddleware<TestMiddleware>();
+
+            app.MapWhen(
+                context => context.Request.Query.ContainsKey("id") && context.Request.Query["id"] == "5",
+                context => context.Run(async request => await request.Response.WriteAsync("Hello with id == 5!"))
+            );
+            app.Map("/hello", context => context.Run(async request => await request.Response.WriteAsync("Hello!!!")));
+
             app.UseEndpoints(endpoints =>
             {
+                // ÐŸÑ€Ð¾ÐµÐºÑ†Ð¸Ñ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ° Ð½Ð° Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(Configuration["Greetings"]);
@@ -43,8 +59,6 @@ namespace WebStore
                 endpoints.MapControllerRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
-                // http://localhost:5000 -> controller = "Home" action = "Index" ïàðàìåòð = null
-                // http://localhost:5000/Catalog/Products/5 controller = "Catalog" action = "Products" ïàðàìåòð = 5
             });
         }
     }
