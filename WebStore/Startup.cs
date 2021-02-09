@@ -25,7 +25,10 @@ namespace WebStore
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<WebStoreDB>(opt => opt.UseSqlite(Configuration.GetConnectionString("Sqlite")));
-            services.AddDbContext<WebStoreDB>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<WebStoreDB>(opt => 
+                opt.UseSqlServer(Configuration.GetConnectionString("Default"))
+                   .UseLazyLoadingProxies()
+                );
             services.AddTransient<WebStoreDbInitializer>();
 
             services.AddIdentity<User, Role>(/*opt => { }*/)
